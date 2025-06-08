@@ -1,23 +1,24 @@
-import { type ReactNode, useEffect } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import css from "./NoteModal.module.css";
 import NoteForm from "../NoteForm/NoteForm";
 
 interface NoteModalProps {
   onClose: () => void;
-  children: ReactNode;
 }
 
-const modalRoot = document.getElementById("modal-root")!;
-
-const NoteModal = ({ onClose, children }: NoteModalProps) => {
+const NoteModal = ({ onClose }: NoteModalProps) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Escape") onClose();
     };
-
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
   }, [onClose]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -32,11 +33,10 @@ const NoteModal = ({ onClose, children }: NoteModalProps) => {
       onClick={handleBackdropClick}
     >
       <div className={css.modal}>
-        {children}
         <NoteForm onClose={onClose} />
       </div>
     </div>,
-    modalRoot
+    document.body
   );
 };
 
