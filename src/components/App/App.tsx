@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { fetchNotes } from "../../services/noteService";
 import NoteList from "../NoteList/NoteList";
 import Pagination from "../Pagination/Pagination";
@@ -20,13 +20,12 @@ function App() {
     totalPages: number;
   };
 
-  const queryOptions: UseQueryOptions<NotesData, Error> = {
+  const { data, isLoading, isError } = useQuery<NotesData, Error>({
     queryKey: ["notes", debouncedSearch, page],
     queryFn: () => fetchNotes(page, debouncedSearch),
     staleTime: 5000,
-  };
-
-  const { data, isLoading, isError } = useQuery<NotesData, Error>(queryOptions);
+    placeholderData: (previousData) => previousData,
+  });
 
   const handleCloseModal = () => setIsOpen(false);
 
